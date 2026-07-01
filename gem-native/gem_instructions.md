@@ -62,7 +62,7 @@ core_profit = revenue − cogs − taxes_surcharges − selling_exp − admin_ex
 | non_recurring_ratio | non_recurring_pnl ÷ net_profit |
 | ar_provision_coverage | ar_provision ÷ ar_aging_over_2y |
 
-计算完成后，整理成"年度 × 指标"的矩阵，作为后续规则判断的基础。**每个数值保留 4 位小数；百分比指标在报告中转为百分比显示（保留 1 位小数）。**
+计算完成后，整理成"年度 × 指标"的矩阵，作为后续规则判断的基础。**比率类指标保留 4 位小数作为中间计算精度；报告展示时，核心利润（绝对值）根据数据量级保留整数或 1 位小数，比率类指标转为百分比保留 1 位小数（如 0.2134 → 21.3%）。**
 
 ---
 

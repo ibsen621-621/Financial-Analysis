@@ -71,4 +71,4 @@ core_profit = revenue
 1. **计算顺序**：先算 `core_profit`，再用它计算 `core_profit_margin`、`cash_conversion`、`goodwill_to_core_profit`。
 2. **缺失字段**：`taxes_surcharges`、`selling_exp`、`admin_exp`、`rd_exp`、`operating_interest_exp`、`other_income` 缺失时在加减法中按 0 处理，但不等于这些费用不存在，应在缺失清单中标注。
 3. **N/A 的传播**：若 `core_profit = 0`，则 `cash_conversion`、`goodwill_to_core_profit` 均为 N/A。
-4. **精度**：中间计算保持全精度，最终报告展示核心利润保留整数或1位小数，比率类指标转为百分比保留1位小数。
+4. **精度**：中间计算保持全精度，最终报告展示时，核心利润（绝对值）根据数据量级保留整数或 1 位小数，比率类指标转为百分比保留 1 位小数（如 0.2134 → 21.3%）。
