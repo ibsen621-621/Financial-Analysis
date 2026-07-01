@@ -1,11 +1,104 @@
-# Financial-Analysis
+# Financial-Analysis · 三表穿透分析（张新民框架）
 
-## 张新民财报分析可复用模型（底子-面子-日子）
+一个可部署为 **Gemini Gem 功能**的财报分析工具：把张新民「底子—面子—日子」方法论沉淀为**可执行的指标引擎 + 风险规则 + 一页报告**。
 
-本仓库提供一个可重复执行的三表联动分析框架：  
-**资产负债表看底子 → 利润表看面子 → 现金流量表看日子**。
+> **资产负债表看底子 → 利润表看面子 → 现金流量表看日子 → 三表勾稽 → 风险结论**
 
 ---
+
+## ✨ 特性
+
+- **可复用模型**：核心口径（核心利润、核心利润率、获现率）集中管理，禁止临场心算
+- **规则引擎**：7 条可执行风险规则（四高、失血增长、纸面利润、渠道压货、商誉雷、分红再融资错配、减值不足）
+- **三表联动诊断**：资产/收入、收入/利润、利润/现金流勾稽
+- **一页投研卡**：标准化输出战略定位、资产/资本/盈利/现金质量与最终判断
+- **可部署**：FastAPI 服务 + Gemini Gem Function Calling 直连
+
+---
+
+## 📦 项目结构
+
+```
+Financial-Analysis/
+├── gem/
+│   ├── gem_instructions.md          # 直接粘贴进 Gemini Gem 的系统指令
+│   └── function_declarations.json   # Gem Function Calling 定义
+├── schemas/
+│   └── financial_input.schema.json  # 统一输入 JSON Schema
+├── rules/
+│   └── rulebook.yaml                # 全部风险规则（可执行）
+├── engine/
+│   ├── metrics.py                   # 指标计算（口径集中地）
+│   ├── diagnosis.py                 # 三表联动诊断 + 规则触发
+│   └── report.py                    # 一页报告渲染
+├── templates/
+│   └── one_pager.md.j2              # 一页投研卡模板
+├── examples/
+│   └── demo_company_5y.json         # 样例数据（可直接跑）
+├── app.py                           # FastAPI 部署入口
+├── requirements.txt
+└── docs/
+    └── methodology.md               # 口径说明与边界
+```
+
+---
+
+## 🚀 快速开始
+
+```bash
+# 1. 安装依赖
+pip install -r requirements.txt
+
+# 2. 启动服务
+uvicorn app:app --reload --port 8000
+
+# 3. 用样例数据验证链路
+curl -X POST http://localhost:8000/analyze \
+  -H "Content-Type: application/json" \
+  -d @examples/demo_company_5y.json
+```
+
+返回结构：
+
+```json
+{
+  "company": "示例科技股份",
+  "scorecard": { "2023": { "core_profit": ..., "cash_conversion": ... } },
+  "risks": [ { "id": "R5_goodwill_risk", "level": "high", "evidence": "..." } ],
+  "cross_check": ["利润增长但经营现金流未增 → ..."],
+  "final_view": "回避",
+  "report_markdown": "# 示例科技股份 · 三表穿透分析 ..."
+}
+```
+
+---
+
+## 🤖 部署为 Gemini Gem
+
+1. **系统指令**：将 [`gem/gem_instructions.md`](gem/gem_instructions.md) 内容粘贴到 Gem 的 Instructions。
+2. **函数声明**：在 Gem 中启用 Function Calling，导入 [`gem/function_declarations.json`](gem/function_declarations.json)。
+3. **绑定后端**：将函数 `analyze_financial_statements` 指向你部署的 `POST /analyze` 服务。
+4. **验证**：用 [`examples/demo_company_5y.json`](examples/demo_company_5y.json) 走通「Gem → API → 一页报告」。
+
+> Gem 负责对话与报告叙事，API 负责固化公式与规则判断，避免模型临场改口径。
+
+---
+
+## 📐 核心口径
+
+| 指标 | 公式 |
+|---|---|
+| 核心利润 | 营业收入 − 营业成本 − 税金及附加 − 销售费用 − 管理费用 − 研发费用 − 经营性利息费用 + 其他收益 |
+| 核心利润率 | 核心利润 / 营业收入 |
+| 核心利润获现率 | 经营活动现金流量净额 / 核心利润 |
+
+完整指标库与阈值见 [`rules/rulebook.yaml`](rules/rulebook.yaml) 与 [`docs/methodology.md`](docs/methodology.md)。
+
+---
+
+# 附：分析方法论（张新民框架）
+
+以下为模型背后的完整分析框架，供人工复核与口径校准参考。
 
 ## 1. 使用范围与输入数据
 
@@ -54,7 +147,7 @@
 ## 3. 利润表模块：看“面子”
 
 ### 3.1 核心利润去水分
-**核心利润**  
+**核���利润**  
 = 营业收入 − 营业成本 − 税金及附加 − 销售费用 − 管理费用 − 研发费用 − 经营性利息费用 + 其他收益
 
 其中“经营性利息费用”建议按以下口径界定，以保证可复用性：  
@@ -115,9 +208,15 @@
 ## 6. 可复用执行模板（每家企业每期一页）
 
 1. **战略定位**：经营性资产占比 / 投资性资产占比 / 变化趋势  
-2. **资产质量**：现金效率、应收账龄、存货结构、商誉占比  
+2. **资��质量**：现金效率、应收账龄、存货结构、商誉占比  
 3. **资本结构**：经营性负债与存货对比、有息债务压力、预付款水平  
 4. **盈利质量**：核心利润、核心利润率、毛利率及三费结构  
 5. **现金质量**：核心利润获现率、投资回报验证、筹资与分红匹配度  
 6. **风险结论**：减值风险、流动性风险、治理与舞弊预警  
 7. **最终判断**：底子（资产）-面子（利润）-日子（现金）是否一致
+
+---
+
+## ⚠️ 免责声明
+
+本模型为结构化辅助分析工具，**不构成任何投资建议**。阈值为经验默认值，应结合行业分位动态校准；附注字段缺失会降低减值类与商誉类规则的可靠性。
