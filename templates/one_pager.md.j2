@@ -1,0 +1,25 @@
+# {{ company }} · 三表穿透分析（张新民框架）
+
+**最终判断：{{ verdict }}**
+
+## 一、指标面板
+| 指标 | {% for y in years %}{{ y }} | {% endfor %}
+|---|{% for y in years %}---|{% endfor %}
+| 核心利润 | {% for y in years %}{{ metrics[y].core_profit }} | {% endfor %}
+| 核心利润率 | {% for y in years %}{{ metrics[y].core_profit_margin }} | {% endfor %}
+| 毛利率 | {% for y in years %}{{ metrics[y].gross_margin }} | {% endfor %}
+| 获现率 | {% for y in years %}{{ metrics[y].cash_conversion }} | {% endfor %}
+| 应收/收入 | {% for y in years %}{{ metrics[y].ar_to_rev }} | {% endfor %}
+| 资产负债(有息)率 | {% for y in years %}{{ metrics[y].debt_ratio }} | {% endfor %}
+
+## 二、三表勾稽诊断
+{% for n in cross_notes %}- {{ n }}
+{% endfor %}
+
+## 三、风险清单
+{% for r in risks %}- **[{{ r.level }}] {{ r.id }}** — {{ r.evidence }}
+{% endfor %}
+
+## 四、结论口径提示
+- 核心利润 = 收入 − 成本 − 税金及附加 − 销售/管理/研发费用 − 经营性利息费用 + 其他收益
+- 获现率 = 经营活动现金流量净额 / 核心利润

@@ -1,0 +1,51 @@
+{
+  "company": "示例科技股份",
+  "years": [2021, 2022, 2023],
+  "data": {
+    "2021": {
+      "revenue": 1000, "cogs": 600, "taxes_surcharges": 10,
+      "selling_exp": 80, "admin_exp": 60, "rd_exp": 40,
+      "operating_interest_exp": 5, "other_income": 3,
+      "operating_profit": 210, "net_profit": 180, "non_recurring_pnl": 10,
+      "cash": 300, "ar": 150, "inventory": 120, "goodwill": 50,
+      "operating_assets": 900, "investing_assets": 100, "cip": 40,
+      "total_assets": 1500, "ap": 200, "contract_liabilities": 60,
+      "prepayments": 20, "short_debt": 100, "long_debt": 150,
+      "financial_exp": 12, "retained_earnings": 300, "total_equity": 800,
+      "cfo": 190, "cfi": -120, "cff": -30, "capex": 100,
+      "dividend_paid": 40, "new_equity_raised": 0,
+      "credit_impairment": 5, "asset_impairment": 3,
+      "ar_aging_over_2y": 20, "ar_provision": 8, "inventory_provision": 4
+    },
+    "2022": {
+      "revenue": 1200, "cogs": 760, "taxes_surcharges": 12,
+      "selling_exp": 110, "admin_exp": 70, "rd_exp": 45,
+      "operating_interest_exp": 6, "other_income": 4,
+      "operating_profit": 220, "net_profit": 200, "non_recurring_pnl": 30,
+      "cash": 350, "ar": 240, "inventory": 200, "goodwill": 50,
+      "operating_assets": 1050, "investing_assets": 150, "cip": 90,
+      "total_assets": 1800, "ap": 260, "contract_liabilities": 55,
+      "prepayments": 30, "short_debt": 200, "long_debt": 220,
+      "financial_exp": 30, "retained_earnings": 460, "total_equity": 900,
+      "cfo": 150, "cfi": -180, "cff": 40, "capex": 160,
+      "dividend_paid": 100, "new_equity_raised": 120,
+      "credit_impairment": 10, "asset_impairment": 8,
+      "ar_aging_over_2y": 60, "ar_provision": 12, "inventory_provision": 5
+    },
+    "2023": {
+      "revenue": 1400, "cogs": 920, "taxes_surcharges": 14,
+      "selling_exp": 150, "admin_exp": 80, "rd_exp": 50,
+      "operating_interest_exp": 8, "other_income": 5,
+      "operating_profit": 230, "net_profit": 210, "non_recurring_pnl": 80,
+      "cash": 400, "ar": 360, "inventory": 320, "goodwill": 300,
+      "operating_assets": 1200, "investing_assets": 400, "cip": 220,
+      "total_assets": 2400, "ap": 300, "contract_liabilities": 50,
+      "prepayments": 60, "short_debt": 350, "long_debt": 350,
+      "financial_exp": 60, "retained_earnings": 620, "total_equity": 1000,
+      "cfo": 90, "cfi": -300, "cff": 150, "capex": 260,
+      "dividend_paid": 130, "new_equity_raised": 200,
+      "credit_impairment": 20, "asset_impairment": 15,
+      "ar_aging_over_2y": 140, "ar_provision": 30, "inventory_provision": 6
+    }
+  }
+}

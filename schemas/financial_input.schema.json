@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FinancialInput",
+  "type": "object",
+  "required": ["company", "years", "data"],
+  "properties": {
+    "company": { "type": "string" },
+    "years": {
+      "type": "array",
+      "items": { "type": "integer" },
+      "minItems": 1
+    },
+    "data": {
+      "type": "object",
+      "description": "键为年度(字符串)，值为该年度财务字段",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "revenue": { "type": "number", "description": "营业收入" },
+          "cogs": { "type": "number", "description": "营业成本" },
+          "taxes_surcharges": { "type": "number", "description": "税金及附加" },
+          "selling_exp": { "type": "number", "description": "销售费用" },
+          "admin_exp": { "type": "number", "description": "管理费用" },
+          "rd_exp": { "type": "number", "description": "研发费用" },
+          "operating_interest_exp": { "type": "number", "description": "经营性利息费用" },
+          "other_income": { "type": "number", "description": "其他收益" },
+          "operating_profit": { "type": "number", "description": "营业利润" },
+          "net_profit": { "type": "number", "description": "净利润" },
+          "non_recurring_pnl": { "type": "number", "description": "非经常性损益" },
+
+          "cash": { "type": "number", "description": "货币资金" },
+          "ar": { "type": "number", "description": "应收账款" },
+          "inventory": { "type": "number", "description": "存货" },
+          "goodwill": { "type": "number", "description": "商誉" },
+          "operating_assets": { "type": "number", "description": "经营性资产合计" },
+          "investing_assets": { "type": "number", "description": "投资性资产合计" },
+          "cip": { "type": "number", "description": "在建工程" },
+          "total_assets": { "type": "number", "description": "资产总计" },
+
+          "ap": { "type": "number", "description": "应付账款+应付票据" },
+          "contract_liabilities": { "type": "number", "description": "合同负债/预收款项" },
+          "prepayments": { "type": "number", "description": "预付款项" },
+          "short_debt": { "type": "number", "description": "短期借款" },
+          "long_debt": { "type": "number", "description": "长期借款+应付债券" },
+          "financial_exp": { "type": "number", "description": "财务费用" },
+          "retained_earnings": { "type": "number", "description": "未分配利润" },
+          "total_equity": { "type": "number", "description": "股东权益合计" },
+
+          "cfo": { "type": "number", "description": "经营活动现金流量净额" },
+          "cfi": { "type": "number", "description": "投资活动现金流量净额" },
+          "cff": { "type": "number", "description": "筹资活动现金流量净额" },
+          "capex": { "type": "number", "description": "购建固定/无形/长期资产支付的现金" },
+          "dividend_paid": { "type": "number", "description": "分配股利支付的现金" },
+          "new_equity_raised": { "type": "number", "description": "吸收投资收到的现金" },
+
+          "credit_impairment": { "type": "number", "description": "信用减值损失(绝对值)" },
+          "asset_impairment": { "type": "number", "description": "资产减值损失(绝对值)" },
+
+          "ar_aging_over_2y": { "type": "number", "description": "账龄2年以上应收(附注)" },
+          "ar_provision": { "type": "number", "description": "应收坏账准备(附注)" },
+          "inventory_provision": { "type": "number", "description": "存货跌价准备(附注)" }
+        },
+        "required": ["revenue", "cogs", "cfo", "net_profit"]
+      }
+    },
+    "industry_benchmark": {
+      "type": "object",
+      "properties": {
+        "gross_margin_median": { "type": "number" },
+        "asset_turnover_median": { "type": "number" },
+        "debt_ratio_median": { "type": "number" }
+      }
+    }
+  }
+}

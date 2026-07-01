@@ -1,0 +1,28 @@
+{
+  "function_declarations": [
+    {
+      "name": "analyze_financial_statements",
+      "description": "按张新民三表模型计算核心指标、执行风险规则并生成结构化诊断结论。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "company": { "type": "string", "description": "公司名称" },
+          "years": {
+            "type": "array",
+            "items": { "type": "integer" },
+            "description": "分析年度列表，建议3~5年"
+          },
+          "data": {
+            "type": "object",
+            "description": "按年份组织的三表及附注字段，结构见 financial_input.schema.json"
+          },
+          "industry_benchmark": {
+            "type": "object",
+            "description": "可选：行业对标中位数（毛利率、周转、杠杆等）"
+          }
+        },
+        "required": ["company", "years", "data"]
+      }
+    }
+  ]
+}

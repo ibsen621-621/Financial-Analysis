@@ -1,0 +1,60 @@
+version: 2
+rules:
+  - id: R1_four_high
+    name: 四高异常
+    level: high
+    logic: "货币资金/资产 高 且 有息负债/资产 高 且 财务费用/收入 高 且 在建工程/资产 高"
+    thresholds:
+      cash_ratio: 0.20
+      debt_ratio: 0.25
+      fin_exp_ratio: 0.02
+      cip_ratio: 0.10
+    recheck: ["核对货币资金是否受限", "核对关联方资金占用"]
+
+  - id: R2_bleeding_growth
+    name: 失血式增长
+    level: high
+    logic: "收入增长 且 利润增长 但 获现率连续<0.8 或 CFO连续为负"
+    thresholds:
+      cash_conversion_floor: 0.8
+      consecutive_years: 2
+    recheck: ["应收账款增速", "存货增速", "收入确认政策"]
+
+  - id: R3_paper_profit
+    name: 纸面利润依赖
+    level: medium
+    logic: "核心利润率下降 且 非经常性损益占净利润比上升"
+    thresholds:
+      non_recurring_ratio: 0.30
+    recheck: ["资产处置收益", "公允价值变动", "政府补助"]
+
+  - id: R4_channel_stuffing
+    name: 渠道压货嫌疑
+    level: medium
+    logic: "应收/收入 上升 且 存货/成本 上升 且 CFO恶化"
+    recheck: ["经销商返利政策", "期后回款"]
+
+  - id: R5_goodwill_risk
+    name: 商誉减值压力
+    level: high
+    logic: "商誉/净资产 高 且 商誉/核心利润 高"
+    thresholds:
+      goodwill_to_equity: 0.30
+      goodwill_to_core_profit: 3.0
+    recheck: ["并购业绩承诺完成度", "商誉减值测试假设"]
+
+  - id: R6_capital_mismatch
+    name: 分红与再融资错配
+    level: medium
+    logic: "高分红 同时 高外部股权/债务融资"
+    thresholds:
+      dividend_payout: 0.50
+    recheck: ["融资成本", "大股东减持/占款"]
+
+  - id: R7_provision_insufficient
+    name: 减值计提不足
+    level: high
+    logic: "账龄2年以上应收占比高 但 坏账覆盖率低；或存货周转慢但跌价准备低"
+    thresholds:
+      ar_provision_coverage_floor: 0.30
+    recheck: ["同业计提比例对比", "是否财务洗澡预备"]
