@@ -57,8 +57,8 @@ class AnnualizationTests(unittest.TestCase):
         self.assertAlmostEqual(q1_metrics["core_profit"], annual_metrics["core_profit"])
 
     def test_real_case_values(self):
-        ar_case = compute_year({"period": "q1", "ar": 37.78e8, "revenue": 292.65e8, "cogs": 1})
-        inv_case = compute_year({"period": "q1", "inventory": 127.04e8, "cogs": 275.61e8, "revenue": 1})
+        ar_case = compute_year({"period": "q1", "ar": 37.78e8, "revenue": 292.65e8, "cogs": 275.61e8})
+        inv_case = compute_year({"period": "q1", "inventory": 127.04e8, "cogs": 275.61e8, "revenue": 292.65e8})
 
         self.assertAlmostEqual(ar_case["ar_to_rev"], 0.0323, places=4)
         self.assertAlmostEqual(inv_case["inv_to_cogs"], 0.1152, places=4)

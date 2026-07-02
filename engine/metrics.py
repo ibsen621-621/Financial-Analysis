@@ -26,18 +26,23 @@ def safe_div(a: float, b: float):
 
 
 def annualization_factor(period: str) -> float:
-    p = (period or "annual").strip().lower()
+    p = normalize_period(period)
     return {
         "annual": 1.0,
         "q1": 4.0,
         "h1": 2.0,
         "q2": 2.0,
         "q3": 4.0 / 3.0,
-    }.get(p, 1.0)
+    }[p]
+
+
+def normalize_period(period: str) -> str:
+    p = (period or "annual").strip().lower()
+    return p if p in {"annual", "q1", "h1", "q2", "q3"} else "annual"
 
 
 def compute_year(y: Dict[str, Any]) -> Dict[str, Any]:
-    period = str(y.get("period", "annual"))
+    period = normalize_period(y.get("period") or "annual")
     factor = annualization_factor(period)
     rev = _g(y, "revenue")
     cogs = _g(y, "cogs")
@@ -45,7 +50,7 @@ def compute_year(y: Dict[str, Any]) -> Dict[str, Any]:
     gross = rev - cogs
 
     return {
-        "period": (period or "annual").strip().lower() if (period or "").strip().lower() in {"annual", "q1", "h1", "q2", "q3"} else "annual",
+        "period": period,
         "annualization_factor": factor,
         "core_profit": round(cp, 4),
         "core_profit_margin": safe_div(cp, rev),
