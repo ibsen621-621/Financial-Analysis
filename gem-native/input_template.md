@@ -7,6 +7,7 @@
 > - **建议年度数**：覆盖 3–5 个会计年度，趋势类风险规则（R2、R3、R4）需要多年数据才能判断。
 > - **附注字段**：`ar_aging_over_2y`（账龄 2 年以上应收）和 `ar_provision`（应收坏账准备）来自年报附注，缺失会导致 R7（减值计提不足）无法判断，建议尽量补充。
 > - **深度分析模式**：若打算使用深度分析模式，建议尽量填全现金流与结构类字段（如 `cfi`、`cff`、`operating_assets`、`investing_assets`、`prepayments`、`ap`、`capex`、`dividend_paid`、`new_equity_raised` 及附注字段），字段越完整，深度报告的战略定位、资本结构、现金质量等模块叙事越充实；缺失字段仍会在缺失数据清单中列出。
+> - **经营性/投资性资产合计的填写方式**：若不直接填 `operating_assets` / `investing_assets` 合计，可改为填写对应的分项字段（见下方 JSON 模板及表格中的分项行），Gem 将按正列举法自动加总；两者同时提供时以合计为准，分项字段不参与计算。
 > - **单位**：同一份数据中所有金额须使用相同单位（万元 / 百万元 / 亿元，选一即可）。
 > - 不知道的字段可留空（删除该行或填 `null`），Gem 会在缺失数据清单中列出影响。
 
@@ -35,9 +36,21 @@
       "non_recurring_pnl": null,
       "cash": null,
       "ar": null,
+      "notes_receivable": null,
+      "contract_assets": null,
       "inventory": null,
       "goodwill": null,
+      "fixed_assets": null,
+      "intangible_assets": null,
+      "right_of_use_assets": null,
       "operating_assets": null,
+      "trading_fin_assets": null,
+      "debt_investment": null,
+      "other_debt_investment": null,
+      "other_equity_investment": null,
+      "lt_equity_investment": null,
+      "investment_property": null,
+      "other_noncurrent_fin_assets": null,
       "investing_assets": null,
       "cip": null,
       "total_assets": null,
@@ -99,11 +112,23 @@
 | 字段（中文名） | 字段键 | 必填 | 20XX 年 | 20XX 年 | 20XX 年 |
 |---|---|:---:|---|---|---|
 | 货币资金 | `cash` | | | | |
+| 应收票据 | `notes_receivable` | | | | |
 | 应收账款 | `ar` | | | | |
+| 合同资产 | `contract_assets` | | | | |
 | 存货 | `inventory` | | | | |
 | 商誉 | `goodwill` | | | | |
-| 经营性资产合计 | `operating_assets` | | | | |
-| 投资性资产合计 | `investing_assets` | | | | |
+| 固定资产 | `fixed_assets` | | | | |
+| 无形资产 | `intangible_assets` | | | | |
+| 使用权资产 | `right_of_use_assets` | | | | |
+| **经营性资产合计** | `operating_assets` | | | | |
+| 交易性金融资产 | `trading_fin_assets` | | | | |
+| 债权投资 | `debt_investment` | | | | |
+| 其他债权投资 | `other_debt_investment` | | | | |
+| 其他权益工具投资 | `other_equity_investment` | | | | |
+| 长期股权投资 | `lt_equity_investment` | | | | |
+| 投资性房地产 | `investment_property` | | | | |
+| 其他非流动金融资产 | `other_noncurrent_fin_assets` | | | | |
+| **投资性资产合计** | `investing_assets` | | | | |
 | 在建工程 | `cip` | | | | |
 | 资产总计 | `total_assets` | | | | |
 | 预付款项 | `prepayments` | | | | |

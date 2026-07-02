@@ -64,7 +64,33 @@ core_profit = revenue − cogs − taxes_surcharges − selling_exp − admin_ex
 
 （`taxes_surcharges`、`selling_exp`、`admin_exp`、`rd_exp`、`operating_interest_exp`、`other_income` 缺失时按 0 处理）
 
-### 2.2 其余指标（全部用 safe_div）
+### 2.2 合计字段派生（operating_assets / investing_assets）
+
+在计算 `op_vs_inv_assets` 之前，先按以下规则确定 `operating_assets` 与 `investing_assets` 的取值。
+
+**优先级**：用户直接提供合计时，以用户提供的合计为准；仅当合计缺失（未提供或为 null）时，才按正列举法分项加总，缺失分项按 `0` 处理（沿用 `_g` 语义）。
+
+**投资性资产派生公式**（仅在 `investing_assets` 缺失时执行）：
+
+```
+investing_assets（派生）=
+    trading_fin_assets + debt_investment + other_debt_investment
+  + other_equity_investment + lt_equity_investment
+  + investment_property + other_noncurrent_fin_assets
+```
+
+**经营性资产派生公式**（仅在 `operating_assets` 缺失时执行）：
+
+```
+operating_assets（派生）=
+    cash + notes_receivable + ar + prepayments + contract_assets
+  + inventory + fixed_assets + cip + intangible_assets
+  + right_of_use_assets + goodwill
+```
+
+> 以上派生**不改变** `op_vs_inv_assets` 公式（`operating_assets ÷ investing_assets`）及任何 R1–R7 阈值。若合计与全部对应分项均缺失，则合计视为缺失，`op_vs_inv_assets` 按 `safe_div` 规则返回 N/A。正列举法下两类资产之和通常不等于 `total_assets`，属正常现象，不做强校验。
+
+### 2.3 其余指标（全部用 safe_div）
 
 | 指标键 | 公式 |
 |---|---|
