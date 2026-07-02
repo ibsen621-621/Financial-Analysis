@@ -17,8 +17,8 @@
 
 | 指标键 | 来源 |
 |---|---|
-| `operating_assets` | 输入字段（`input_fields.md`） |
-| `investing_assets` | 输入字段（`input_fields.md`） |
+| `operating_assets` | 输入字段（若未直接提供，则按 `metrics.md` 合计字段派生协议正列举加总） |
+| `investing_assets` | 输入字段（若未直接提供，则按 `metrics.md` 合计字段派生协议正列举加总） |
 | `op_vs_inv_assets` | `metrics.md`：`operating_assets ÷ investing_assets` |
 | `total_assets` | 输入字段，用于计算占比 |
 
@@ -34,7 +34,7 @@
 |---|---|
 | 健康 | 经营性资产占比稳定且较高；`op_vs_inv_assets` 比值稳定或上升 |
 | 观察 | 投资性资产占比小幅上升，但经营性资产绝对值仍在增长 |
-| 异常 | 投资性资产占比快速上升，经营性资产占比持续下降；或两类资产均缺失（无法判断战略取向） |
+| 异常 | 投资性资产占比快速上升，经营性资产占比持续下降；或合计与所有对应分项字段**均缺失**（此时无法判断战略取向） |
 
 ### 框架解读
 

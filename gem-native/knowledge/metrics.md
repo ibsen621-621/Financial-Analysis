@@ -54,6 +54,56 @@ core_profit = revenue
 
 ---
 
+## 合计字段派生协议（经营性/投资性资产）
+
+> 本节为 gem-native 文档层的合计取值扩展，**不改变**本文件任何现有指标公式、阈值或 `engine/metrics.py` 计算函数；`op_vs_inv_assets` 公式本身（`operating_assets ÷ investing_assets`）保持不变。
+
+在计算 `op_vs_inv_assets` 之前，先按以下规则确定 `operating_assets` 与 `investing_assets` 的取值：
+
+**优先级规则（两个合计字段通用）**：用户直接提供合计时，以用户提供的合计为准；仅当合计缺失（未提供或为 null）时，才按正列举法用各自分项清单加总派生，缺失分项按 `0` 处理（沿用 `_g` 语义：在加减法中缺失字段视为 0，详见上方"辅助函数语义"一节）。
+
+### 投资性资产派生公式
+
+若 `investing_assets` 缺失，则：
+
+```
+investing_assets（派生）=
+    trading_fin_assets          （交易性金融资产，缺失按 0）
+  + debt_investment              （债权投资，缺失按 0）
+  + other_debt_investment        （其他债权投资，缺失按 0）
+  + other_equity_investment      （其他权益工具投资，缺失按 0）
+  + lt_equity_investment         （长期股权投资，缺失按 0）
+  + investment_property          （投资性房地产，缺失按 0）
+  + other_noncurrent_fin_assets  （其他非流动金融资产，缺失按 0）
+```
+
+### 经营性资产派生公式
+
+若 `operating_assets` 缺失，则：
+
+```
+operating_assets（派生）=
+    cash                （货币资金，缺失按 0）
+  + notes_receivable    （应收票据，缺失按 0）
+  + ar                  （应收账款，缺失按 0）
+  + prepayments         （预付款项，缺失按 0）
+  + contract_assets     （合同资产，缺失按 0）
+  + inventory           （存货，缺失按 0）
+  + fixed_assets        （固定资产，缺失按 0）
+  + cip                 （在建工程，缺失按 0）
+  + intangible_assets   （无形资产，缺失按 0）
+  + right_of_use_assets （使用权资产，缺失按 0）
+  + goodwill            （商誉，缺失按 0）
+```
+
+### 说明
+
+- 若合计与全部对应分项字段均缺失，则该合计视为缺失，`op_vs_inv_assets` 按 `safe_div` 规则返回 N/A。
+- 正列举法下 `operating_assets + investing_assets` 通常不等于 `total_assets`，属正常现象，不做强校验，不报错。
+- 本派生不改变任何现有指标定义、R1–R7 规则或阈值。
+
+---
+
 ## 第二步：全部指标定义
 
 | 指标键 | 中文名 | 公式 | 说明 |
