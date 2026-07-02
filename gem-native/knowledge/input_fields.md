@@ -50,12 +50,20 @@
 | 字段键 | 中文名 | 说明 | 影响指标/规则 |
 |---|---|---|---|
 | `cash` | 货币资金 | 资产负债表"货币资金"行 | cash_ratio, **R1** |
+| `notes_receivable` | 应收票据 | 资产负债表"应收票据"行 | op_vs_inv_assets（经营性资产分项） |
+| `ar_financing` | 应收款项融资 | 资产负债表"应收款项融资"行 | op_vs_inv_assets（经营性资产分项） |
 | `ar` | 应收账款 | 应收账款净额（已扣坏账准备） | ar_to_rev, **R4** |
+| `other_receivables` | 其他应收款 | 资产负债表"其他应收款"行。**不计入经营性资产也不计入投资性资产**（关联占款性质：多核算母子公司资金往来、对外拆借或关联方账款，不直接对应主营业务） | 参考字段 |
+| `prepayments` | 预付款项 | 资产负债表"预付款项"行 | op_vs_inv_assets（经营性资产分项） |
+| `contract_assets` | 合同资产 | 资产负债表"合同资产"行 | op_vs_inv_assets（经营性资产分项） |
 | `inventory` | 存货 | 存货净额（已扣跌价准备） | inv_to_cogs, **R4** |
-| `goodwill` | 商誉 | 商誉净额（已扣减值） | goodwill_to_equity, goodwill_to_core_profit, **R5** |
-| `operating_assets` | 经营性资产合计 | 与主营业务直接相关的资产合计。**若未直接提供本合计，将由下方对应分项字段按正列举法自动加总**（派生为 gem-native 文档层合计取值扩展，不改变 schema 字段定义与 engine 计算函数）。 | op_vs_inv_assets |
-| `investing_assets` | 投资性资产合计 | 金融投资类资产合计。**若未直接提供本合计，将由下方对应分项字段按正列举法自动加总**（派生为 gem-native 文档层合计取值扩展，不改变 schema 字段定义与 engine 计算函数）。 | op_vs_inv_assets |
+| `fixed_assets` | 固定资产 | 资产负债表"固定资产"净值 | op_vs_inv_assets（经营性资产分项） |
 | `cip` | 在建工程 | 在建工程原值 | cip_ratio, **R1** |
+| `intangible_assets` | 无形资产 | 资产负债表"无形资产"净值 | op_vs_inv_assets（经营性资产分项） |
+| `right_of_use_assets` | 使用权资产 | 资产负债表"使用权资产"行 | op_vs_inv_assets（经营性资产分项） |
+| `goodwill` | 商誉 | 商誉净额（已扣减值）。**不计入经营性资产合计**（张新民口径：并购形成、不直接创收，评估核心经营资产效率时剔除） | goodwill_to_equity, goodwill_to_core_profit, **R5** |
+| `operating_assets` | 经营性资产合计 | 与主营业务直接相关的资产合计（张新民口径，不含商誉）。**若未直接提供本合计，将由下方对应分项字段按正列举法自动加总**（派生为 gem-native 文档层合计取值扩展，不改变 schema 字段定义与 engine 计算函数）。 | op_vs_inv_assets |
+| `investing_assets` | 投资性资产合计 | 金融投资类资产合计。**若未直接提供本合计，将由下方对应分项字段按正列举法自动加总**（派生为 gem-native 文档层合计取值扩展，不改变 schema 字段定义与 engine 计算函数）。 | op_vs_inv_assets |
 | `total_assets` | 资产总计 | 资产负债表"资产总计" | cash_ratio, debt_ratio, cip_ratio, **R1**，三表勾稽CC1 |
 
 #### 投资性资产分项字段（7 项，均选填，缺失按 0）
@@ -83,6 +91,7 @@
 |---|---|---|---|
 | `cash` | 货币资金 | （已在上表列出，此处复用于经营性资产加总）货币资金计入经营性资产 | op_vs_inv_assets |
 | `notes_receivable` | 应收票据 | 资产负债表"应收票据"行 | op_vs_inv_assets |
+| `ar_financing` | 应收款项融资 | 资产负债表"应收款项融资"行（用于贴现或背书的优质应收票据，本质仍是销售回款债权） | op_vs_inv_assets |
 | `ar` | 应收账款 | （已在上表列出，此处复用于经营性资产加总） | op_vs_inv_assets |
 | `prepayments` | 预付款项 | （已在上表列出，此处复用于经营性资产加总） | op_vs_inv_assets |
 | `contract_assets` | 合同资产 | 资产负债表"合同资产"行 | op_vs_inv_assets |
@@ -91,7 +100,8 @@
 | `cip` | 在建工程 | （已在上表列出，此处复用于经营性资产加总） | op_vs_inv_assets |
 | `intangible_assets` | 无形资产 | 资产负债表"无形资产"净值 | op_vs_inv_assets |
 | `right_of_use_assets` | 使用权资产 | 资产负债表"使用权资产"行 | op_vs_inv_assets |
-| `goodwill` | 商誉 | （已在上表列出，此处复用于经营性资产加总） | op_vs_inv_assets |
+
+> **口径说明**：**商誉（`goodwill`）不再计入经营性资产**（张新民口径：商誉由并购形成、不直接创造营业收入，评估核心经营资产效率时须剔除）。`goodwill` 字段保留，仅用于 `goodwill_to_equity`、`goodwill_to_core_profit` 指标与 R5 规则。
 
 ---
 
@@ -149,3 +159,4 @@
    - **优先级**：若用户直接提供合计字段，则以用户提供的合计为准；仅当合计缺失（未提供或为 null）时，才按上方"分项字段表"所列字段正列举加总，缺失的分项字段按 `0` 处理（沿用 `_g` 语义）。
    - **正列举法的勾稽缺口**：正列举法下 `operating_assets + investing_assets` 通常不等于 `total_assets`（递延所得税资产、其他应收款等未归类项会形成缺口），属正常现象，不做强校验，不因此报错或警告。
    - **派生范围**：该派生逻辑为 gem-native 文档层的合计取值扩展，不改变 `schemas/financial_input.schema.json` 字段定义与 `engine/metrics.py` 计算函数。
+   - **口径边界**：经营性资产派生公式**不包含商誉**（张新民口径：商誉由并购形成、不直接创收，评估核心经营资产效率时须剔除；`goodwill` 字段保留，仅用于 R5 等专项指标）；**其他应收款（`other_receivables`）既不计入经营性资产也不计入投资性资产**（该科目多核算关联方占款，不直接对应主营业务）。
