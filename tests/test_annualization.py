@@ -60,6 +60,8 @@ class AnnualizationTests(unittest.TestCase):
         ar_case = compute_year({"period": "q1", "ar": 37.78e8, "revenue": 292.65e8, "cogs": 275.61e8})
         inv_case = compute_year({"period": "q1", "inventory": 127.04e8, "cogs": 275.61e8, "revenue": 292.65e8})
 
+        self.assertEqual(ar_case["period"], "q1")
+        self.assertEqual(ar_case["annualization_factor"], 4.0)
         self.assertAlmostEqual(ar_case["ar_to_rev"], 0.0323, places=4)
         self.assertAlmostEqual(inv_case["inv_to_cogs"], 0.1152, places=4)
 
