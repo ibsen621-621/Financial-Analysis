@@ -20,6 +20,23 @@
 
 ---
 
+## 报告期与年化协议
+
+每个年度对象可选字段 `period`（默认 `annual`）。年化系数如下：
+
+| period | 含义 | 年化系数 |
+|---|---|---|
+| `annual` | 年报 | `1` |
+| `q1` | 一季报（累计 3 个月） | `4` |
+| `h1` / `q2` | 半年报（累计 6 个月） | `2` |
+| `q3` | 三季报（累计 9 个月） | `4/3` |
+
+- 按 A 股常见口径，`revenue`、`cogs`、`cfo` 等流量字段按**年初至今累计（YTD）**理解并年化。
+- 若用户提供的是"单季口径（非累计）"，需先转换为累计值，或自行调整年化系数（尤其半年报/三季报）。
+- 仅对**存量 ÷ 单期流量**（或语义上需要与全年口径可比的流量分母）执行年化，分母按 `流量 × 年化系数`。
+
+---
+
 ## 第一步：核心利润（core_profit）
 
 核心利润是后续多个比率的基础，必须优先计算。
@@ -49,17 +66,17 @@ core_profit = revenue
 | `selling_exp_ratio` | 销售费用率 | `selling_exp ÷ revenue` | 销售投入强度 |
 | `admin_exp_ratio` | 管理费用率 | `admin_exp ÷ revenue` | 管理效率 |
 | `rd_exp_ratio` | 研发费用率 | `rd_exp ÷ revenue` | 创新投入强度 |
-| `ar_to_rev` | 应收/收入 | `ar ÷ revenue` | 应收账款占收入比；上升趋势结合存货双升触发 R4 |
-| `inv_to_cogs` | 存货/成本 | `inventory ÷ cogs` | 存货相对成本的积压程度 |
+| `ar_to_rev` | 应收/收入 | `ar ÷ (revenue × 年化系数)` | 应收账款占收入比；上升趋势结合存货双升触发 R4 |
+| `inv_to_cogs` | 存货/成本 | `inventory ÷ (cogs × 年化系数)` | 存货相对成本的积压程度 |
 | `cash_ratio` | 货币资金/资产 | `cash ÷ total_assets` | 资产中现金占比；≥ 0.20 为 R1 条件之一 |
 | `debt_ratio` | 有息负债率 | `(short_debt + long_debt) ÷ total_assets` | 资产中有息债务占比；≥ 0.25 为 R1 条件之一 |
 | `fin_exp_ratio` | 财务费用/收入 | `financial_exp ÷ revenue` | 融资成本负担；≥ 0.02 为 R1 条件之一 |
 | `cip_ratio` | 在建工程/资产 | `cip ÷ total_assets` | 资产中在建工程占比；≥ 0.10 为 R1 条件之一 |
 | `goodwill_to_equity` | 商誉/净资产 | `goodwill ÷ total_equity` | 商誉对净资产的侵蚀风险；≥ 0.30 为 R5 条件之一 |
-| `goodwill_to_core_profit` | 商誉/核心利润 | `goodwill ÷ core_profit` | 商誉消化能力；≥ 3.0 为 R5 条件之一 |
+| `goodwill_to_core_profit` | 商誉/核心利润 | `goodwill ÷ (core_profit × 年化系数)` | 商誉消化能力；≥ 3.0 为 R5 条件之一 |
 | `op_vs_inv_assets` | 经营性/投资性资产 | `operating_assets ÷ investing_assets` | 资产结构中经营资产主导程度；比值越高越健康 |
 | `ap_vs_inventory` | 应付/存货 | `ap ÷ inventory` | 供应链话语权；比值高说明对供应商占款能力强 |
-| `capex_intensity` | 资本开支强度 | `capex ÷ revenue` | 维持/扩张业务所需的资本投入密度 |
+| `capex_intensity` | 资本开支强度 | `capex ÷ (revenue × 年化系数)` | 维持/扩张业务所需的资本投入密度（用于与年报口径可比） |
 | `dividend_payout` | 分红率 | `dividend_paid ÷ net_profit` | 利润中用于分红的比例；≥ 0.50 触发 R6 |
 | `non_recurring_ratio` | 非经常性损益占比 | `non_recurring_pnl ÷ net_profit` | 利润中非经常性成分占比；≥ 0.30 结合利润率下行触发 R3 |
 | `ar_provision_coverage` | 2年以上应收坏账覆盖率 | `ar_provision ÷ ar_aging_over_2y` | 高账龄应收的坏账准备充足度；< 0.30 触发 R7 |
@@ -71,4 +88,8 @@ core_profit = revenue
 1. **计算顺序**：先算 `core_profit`，再用它计算 `core_profit_margin`、`cash_conversion`、`goodwill_to_core_profit`。
 2. **缺失字段**：`taxes_surcharges`、`selling_exp`、`admin_exp`、`rd_exp`、`operating_interest_exp`、`other_income` 缺失时在加减法中按 0 处理，但不等于这些费用不存在，应在缺失清单中标注。
 3. **N/A 的传播**：若 `core_profit = 0`，则 `cash_conversion`、`goodwill_to_core_profit` 均为 N/A。
-4. **精度**：中间计算保持全精度，最终报告展示时，核心利润（绝对值）根据数据量级保留整数或 1 位小数，比率类指标转为百分比保留 1 位小数（如 0.2134 → 21.3%）。
+4. **年化边界**：
+   - 存量÷存量（如 `cash_ratio`、`debt_ratio`、`cip_ratio`、`goodwill_to_equity`、`op_vs_inv_assets`、`ap_vs_inventory`、`ar_provision_coverage`）不年化。
+   - 流量÷流量（如 `core_profit_margin`、`gross_margin`、`cash_conversion`、`cfo_to_net_profit`、各费用率、`dividend_payout`、`non_recurring_ratio`）不年化。
+   - 仅 `ar_to_rev`、`inv_to_cogs`、`capex_intensity`、`goodwill_to_core_profit` 使用年化分母。
+5. **精度**：中间计算保持全精度，最终报告展示时，核心利润（绝对值）根据数据量级保留整数或 1 位小数，比率类指标转为百分比保留 1 位小数（如 0.2134 → 21.3%）。

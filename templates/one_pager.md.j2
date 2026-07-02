@@ -23,3 +23,8 @@
 ## 四、结论口径提示
 - 核心利润 = 收入 − 成本 − 税金及附加 − 销售/管理/研发费用 − 经营性利息费用 + 其他收益
 - 获现率 = 经营活动现金流量净额 / 核心利润
+{% for y in years %}
+{% if metrics[y].get('annualization_factor', 1) != 1 %}
+- {{ y }} 为 {{ metrics[y].get('period', 'annual') }} 口径（年化系数={{ metrics[y].get('annualization_factor') }}）；`ar_to_rev`、`inv_to_cogs`、`capex_intensity`、`goodwill_to_core_profit` 的流量分母已年化。
+{% endif %}
+{% endfor %}

@@ -16,6 +16,11 @@
       "additionalProperties": {
         "type": "object",
         "properties": {
+          "period": {
+            "type": "string",
+            "enum": ["annual", "q1", "h1", "q2", "q3"],
+            "description": "报告期类型。缺省按 annual 处理；用于季度数据分母年化。"
+          },
           "revenue": { "type": "number", "description": "营业收入" },
           "cogs": { "type": "number", "description": "营业成本" },
           "taxes_surcharges": { "type": "number", "description": "税金及附加" },

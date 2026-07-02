@@ -25,12 +25,28 @@ def safe_div(a: float, b: float):
     return a / b if b not in (0, 0.0, None) else None
 
 
+def annualization_factor(period: str) -> float:
+    p = (period or "annual").strip().lower()
+    return {
+        "annual": 1.0,
+        "q1": 4.0,
+        "h1": 2.0,
+        "q2": 2.0,
+        "q3": 4.0 / 3.0,
+    }.get(p, 1.0)
+
+
 def compute_year(y: Dict[str, Any]) -> Dict[str, Any]:
+    period = str(y.get("period", "annual"))
+    factor = annualization_factor(period)
     rev = _g(y, "revenue")
+    cogs = _g(y, "cogs")
     cp = core_profit(y)
-    gross = rev - _g(y, "cogs")
+    gross = rev - cogs
 
     return {
+        "period": (period or "annual").strip().lower() if (period or "").strip().lower() in {"annual", "q1", "h1", "q2", "q3"} else "annual",
+        "annualization_factor": factor,
         "core_profit": round(cp, 4),
         "core_profit_margin": safe_div(cp, rev),
         "gross_margin": safe_div(gross, rev),
@@ -39,17 +55,18 @@ def compute_year(y: Dict[str, Any]) -> Dict[str, Any]:
         "selling_exp_ratio": safe_div(_g(y, "selling_exp"), rev),
         "admin_exp_ratio": safe_div(_g(y, "admin_exp"), rev),
         "rd_exp_ratio": safe_div(_g(y, "rd_exp"), rev),
-        "ar_to_rev": safe_div(_g(y, "ar"), rev),
-        "inv_to_cogs": safe_div(_g(y, "inventory"), _g(y, "cogs")),
+        "ar_to_rev": safe_div(_g(y, "ar"), rev * factor),
+        "inv_to_cogs": safe_div(_g(y, "inventory"), cogs * factor),
         "cash_ratio": safe_div(_g(y, "cash"), _g(y, "total_assets")),
         "debt_ratio": safe_div(_g(y, "short_debt") + _g(y, "long_debt"), _g(y, "total_assets")),
         "fin_exp_ratio": safe_div(_g(y, "financial_exp"), rev),
         "cip_ratio": safe_div(_g(y, "cip"), _g(y, "total_assets")),
         "goodwill_to_equity": safe_div(_g(y, "goodwill"), _g(y, "total_equity")),
-        "goodwill_to_core_profit": safe_div(_g(y, "goodwill"), cp),
+        "goodwill_to_core_profit": safe_div(_g(y, "goodwill"), cp * factor),
         "op_vs_inv_assets": safe_div(_g(y, "operating_assets"), _g(y, "investing_assets")),
         "ap_vs_inventory": safe_div(_g(y, "ap"), _g(y, "inventory")),
-        "capex_intensity": safe_div(_g(y, "capex"), rev),
+        # capex/revenue 用于衡量资本投入密度，需与年报口径可比，因此按报告期年化收入分母。
+        "capex_intensity": safe_div(_g(y, "capex"), rev * factor),
         "dividend_payout": safe_div(_g(y, "dividend_paid"), _g(y, "net_profit")),
         "non_recurring_ratio": safe_div(_g(y, "non_recurring_pnl"), _g(y, "net_profit")),
         "ar_provision_coverage": safe_div(_g(y, "ar_provision"), _g(y, "ar_aging_over_2y")),

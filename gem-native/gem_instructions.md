@@ -29,6 +29,17 @@
 
 ---
 
+## 第零步：报告期识别
+
+在开始缺失项检查与指标计算前，先识别每个年度对象的 `period`：
+- 优先读取 `data["{年度}"].period`（可选值：`annual`、`q1`、`h1`、`q2`、`q3`）。
+- 若缺失，则默认 `annual`（年化系数=1）。
+- 若用户在自然语言中明确说明"一季报/半年报/三季报"，可据此补全对应 `period`。
+
+年化系数固定为：`annual=1`、`q1=4`、`h1/q2=2`、`q3=4/3`。
+
+---
+
 ## 第一步：缺失数据检查
 
 在开始任何计算之前，先扫描输入数据，列出所有缺失的必填字段（`revenue`、`cogs`、`cfo`、`net_profit` 为每年度必填）和可能影响特定规则的附注字段（`ar_aging_over_2y`、`ar_provision` 缺失会使 R7 无法判断；`non_recurring_pnl` 缺失会使 R3 无法判断等）。将缺失清单输出在报告的 **F 节**，先继续基于已有数据完成分析，缺失指标记为 **N/A**，结论给保守估计。
@@ -40,6 +51,8 @@
 > 依据 Knowledge 文件 `metrics.md` 中的定义，**逐年**计算以下全部指标。
 > **`safe_div` 规则**：所有除法均使用 `safe_div`——分母为 0 或缺失（None）时，结果记为 **N/A**，不得臆造数值。
 > **`_g` 规则**：缺失字段（JSON 中未出现的键）在加减法中按 **0** 处理；但当该字段作为分母时，按"缺失"处理，结果记为 N/A。
+> **年化规则**：仅对第 3 类指标（`ar_to_rev`、`inv_to_cogs`、`capex_intensity`、`goodwill_to_core_profit`）按报告期年化分母（`流量分母 × 年化系数`）。第 1 类（存量÷存量）与第 2 类（流量÷流量）保持原式不变；`core_profit` 绝对值不年化。
+> **边界约束**：年化仅调整上述指标分母口径，不新增指标、不修改任何 R1–R7 阈值。
 
 逐年计算顺序如下（以每个年度 `y` 的输入数据为基础）：
 
@@ -62,17 +75,17 @@ core_profit = revenue − cogs − taxes_surcharges − selling_exp − admin_ex
 | selling_exp_ratio | selling_exp ÷ revenue |
 | admin_exp_ratio | admin_exp ÷ revenue |
 | rd_exp_ratio | rd_exp ÷ revenue |
-| ar_to_rev | ar ÷ revenue |
-| inv_to_cogs | inventory ÷ cogs |
+| ar_to_rev | ar ÷ (revenue × 年化系数) |
+| inv_to_cogs | inventory ÷ (cogs × 年化系数) |
 | cash_ratio | cash ÷ total_assets |
 | debt_ratio | (short_debt + long_debt) ÷ total_assets |
 | fin_exp_ratio | financial_exp ÷ revenue |
 | cip_ratio | cip ÷ total_assets |
 | goodwill_to_equity | goodwill ÷ total_equity |
-| goodwill_to_core_profit | goodwill ÷ core_profit |
+| goodwill_to_core_profit | goodwill ÷ (core_profit × 年化系数) |
 | op_vs_inv_assets | operating_assets ÷ investing_assets |
 | ap_vs_inventory | ap ÷ inventory |
-| capex_intensity | capex ÷ revenue |
+| capex_intensity | capex ÷ (revenue × 年化系数) |
 | dividend_payout | dividend_paid ÷ net_profit |
 | non_recurring_ratio | non_recurring_pnl ÷ net_profit |
 | ar_provision_coverage | ar_provision ÷ ar_aging_over_2y |
@@ -211,6 +224,7 @@ mids ≥ 2   → 最终判断：观察
 | 非经常性损益占比（non_recurring_ratio） | | | |
 
 N/A 表示数据缺失或分母为零，不得填入估算值。
+若存在季度数据（`period != annual`），需在该表标题或表下注明"季度数据已按报告期年化（仅影响存量÷单期流量类分母）"，并列出各年度 `period` 与年化系数，避免误读。
 
 ---
 
@@ -328,6 +342,7 @@ N/A 表示数据缺失或分母为零。
 #### ② 资产质量
 
 > 对应 Knowledge 文件 `deep_analysis_framework.md` 第二模块。使用指标：`cash_ratio`、`ar_to_rev`、`inv_to_cogs`、`goodwill_to_equity`、`goodwill_to_core_profit`，以及原始字段 `ar_aging_over_2y`、`ar_provision`、`ar_provision_coverage`、`inventory_provision`。
+> 注：`ar_to_rev`、`inv_to_cogs`、`goodwill_to_core_profit` 在季度数据下需使用年化分母口径。
 
 **指标小表**（按年度横排）：
 
@@ -401,6 +416,7 @@ N/A 表示数据缺失或分母为零。
 #### ⑤ 现金质量
 
 > 对应 Knowledge 文件 `deep_analysis_framework.md` 第五模块。使用指标：`cash_conversion`、`cfo_to_net_profit`、`capex_intensity`，以及原始字段 `cfo`、`cfi`、`cff`、`capex`、`dividend_paid`、`new_equity_raised`、`dividend_payout`。
+> 注：`capex_intensity` 在季度数据下使用年化收入分母；其余指标保持原式。
 
 **指标小表**（按年度横排）：
 
