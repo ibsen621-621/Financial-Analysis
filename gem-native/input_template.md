@@ -8,6 +8,8 @@
 > - **附注字段**：`ar_aging_over_2y`（账龄 2 年以上应收）和 `ar_provision`（应收坏账准备）来自年报附注，缺失会导致 R7（减值计提不足）无法判断，建议尽量补充。
 > - **深度分析模式**：若打算使用深度分析模式，建议尽量填全现金流与结构类字段（如 `cfi`、`cff`、`operating_assets`、`investing_assets`、`prepayments`、`ap`、`capex`、`dividend_paid`、`new_equity_raised` 及附注字段），字段越完整，深度报告的战略定位、资本结构、现金质量等模块叙事越充实；缺失字段仍会在缺失数据清单中列出。
 > - **经营性/投资性资产合计的填写方式**：若不直接填 `operating_assets` / `investing_assets` 合计，可改为填写对应的分项字段（见下方 JSON 模板及表格中的分项行），Gem 将按正列举法自动加总；两者同时提供时以合计为准，分项字段不参与计算。
+> - **商誉口径说明**：商誉（`goodwill`）**不计入**经营性资产合计（张新民口径：并购形成、不直接创收，评估核心经营资产效率时须剔除）；字段保留供 `goodwill_to_equity`、`goodwill_to_core_profit`、R5 专项分析使用。
+> - **其他应收款口径说明**：其他应收款（`other_receivables`）**不计入**经营性资产也不计入投资性资产（关联占款性质；不论金额大小始终排除，金额过大时需单独关注资金占用风险）。
 > - **单位**：同一份数据中所有金额须使用相同单位（万元 / 百万元 / 亿元，选一即可）。
 > - 不知道的字段可留空（删除该行或填 `null`），Gem 会在缺失数据清单中列出影响。
 
@@ -37,7 +39,9 @@
       "cash": null,
       "ar": null,
       "notes_receivable": null,
+      "ar_financing": null,
       "contract_assets": null,
+      "other_receivables": null,
       "inventory": null,
       "goodwill": null,
       "fixed_assets": null,
@@ -113,7 +117,9 @@
 |---|---|:---:|---|---|---|
 | 货币资金 | `cash` | | | | |
 | 应收票据 | `notes_receivable` | | | | |
+| 应收款项融资 | `ar_financing` | | | | |
 | 应收账款 | `ar` | | | | |
+| 其他应收款 | `other_receivables` | | | | |
 | 合同资产 | `contract_assets` | | | | |
 | 存货 | `inventory` | | | | |
 | 商誉 | `goodwill` | | | | |

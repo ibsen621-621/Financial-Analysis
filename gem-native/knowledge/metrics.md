@@ -85,6 +85,7 @@ investing_assets（派生）=
 operating_assets（派生）=
     cash                （货币资金，缺失按 0）
   + notes_receivable    （应收票据，缺失按 0）
+  + ar_financing        （应收款项融资，缺失按 0）
   + ar                  （应收账款，缺失按 0）
   + prepayments         （预付款项，缺失按 0）
   + contract_assets     （合同资产，缺失按 0）
@@ -93,7 +94,6 @@ operating_assets（派生）=
   + cip                 （在建工程，缺失按 0）
   + intangible_assets   （无形资产，缺失按 0）
   + right_of_use_assets （使用权资产，缺失按 0）
-  + goodwill            （商誉，缺失按 0）
 ```
 
 ### 说明
@@ -101,6 +101,8 @@ operating_assets（派生）=
 - 若合计与全部对应分项字段均缺失，则该合计视为缺失，`op_vs_inv_assets` 按 `safe_div` 规则返回 N/A。
 - 正列举法下 `operating_assets + investing_assets` 通常不等于 `total_assets`，属正常现象，不做强校验，不报错。
 - 本派生不改变任何现有指标定义、R1–R7 规则或阈值。
+- **商誉（`goodwill`）不计入经营性资产**（张新民口径：商誉由并购形成、不直接创造营业收入，评估核心经营资产效率时须剔除）；`goodwill` 字段保留，仅用于 `goodwill_to_equity`、`goodwill_to_core_profit` 指标与 R5 规则。
+- **其他应收款（`other_receivables`）始终不计入经营性资产也不计入投资性资产**（不论金额大小均排除；该科目多核算母子公司资金往来、对外拆借或关联方账款，不直接对应主营业务；若金额过大则额外反映资金被外部/关联方占用的风险，需单独关注）。
 
 ---
 

@@ -83,9 +83,9 @@ investing_assets（派生）=
 
 ```
 operating_assets（派生）=
-    cash + notes_receivable + ar + prepayments + contract_assets
+    cash + notes_receivable + ar_financing + ar + prepayments + contract_assets
   + inventory + fixed_assets + cip + intangible_assets
-  + right_of_use_assets + goodwill
+  + right_of_use_assets
 ```
 
 > 以上派生**不改变** `op_vs_inv_assets` 公式（`operating_assets ÷ investing_assets`）及任何 R1–R7 阈值。若合计与全部对应分项均缺失，则合计视为缺失，`op_vs_inv_assets` 按 `safe_div` 规则返回 N/A。正列举法下两类资产之和通常不等于 `total_assets`，属正常现象，不做强校验。
